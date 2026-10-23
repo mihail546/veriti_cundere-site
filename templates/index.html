@@ -41,23 +41,24 @@
 
     <script>
         function toggleMatteMode() {
-            document.body.classList.toggle('matte-mode');
+            const isMatte = document.body.classList.toggle('matte-mode');
             const btn = document.getElementById('toggle-btn');
-            if (document.body.classList.contains('matte-mode')) {
-                btn.textContent = '🕋 Матово';
-            } else {
-                btn.textContent = '✨ Стекло';
-            }
+            btn.textContent = isMatte ? '🕋 Матово' : '✨ Стекло';
         }
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
             const text = input.value.trim();
             if (!text) return;
 
             const chatWindow = document.getElementById('chat-window');
 
-            // Вывод сообщения пользователя
+            // Блокируем ввод во время запроса
+            input.disabled = true;
+            sendBtn.disabled = true;
+
+            // Вывод сообщения пользователя (используем textContent для защиты от XSS)
             const userMsg = document.createElement('div');
             userMsg.className = 'message user';
             userMsg.textContent = text;
@@ -79,31 +80,38 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text })
                 });
-                const data = await response.json();
-                
-                if (chatWindow.contains(statusMsg)) {
-                    chatWindow.removeChild(statusMsg);
+
+                // Проверяем, ответил ли сервер успешно (статус 2xx)
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.status}`);
                 }
 
+                const data = await response.json();
+                
                 const botMsg = document.createElement('div');
                 botMsg.className = 'message bot';
                 botMsg.textContent = data.reply || 'Ой, ошибка какая-то... отстань!';
                 chatWindow.appendChild(botMsg);
+
             } catch (e) {
-                if (chatWindow.contains(statusMsg)) {
-                    chatWindow.removeChild(statusMsg);
-                }
                 const botMsg = document.createElement('div');
                 botMsg.className = 'message bot';
                 botMsg.textContent = 'Сервер глючит... Это точно ты что-то сломал!';
                 chatWindow.appendChild(botMsg);
+            } finally {
+                // Очищаем статус, возвращаем активность инпуту и возвращаем фокус
+                statusMsg.remove();
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }
-
-            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        document.getElementById('user-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
+        // Обработка нажатия Enter (с учетом особенностей мобильных клавиатур)
+        document.getElementById('user-input').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
                 sendMessage();
             }
         });
