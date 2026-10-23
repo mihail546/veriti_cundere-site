@@ -30,8 +30,8 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    
-    /* Жидкое стекло по умолчанию */
+
+    /* Эффект жидкого стекла */
     background: rgba(20, 20, 25, 0.45);
     backdrop-filter: blur(25px) saturate(180%);
     -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -54,7 +54,7 @@ body {
 }
 
 /* =========================
-   КНОПКИ СПРАВА
+   КНОПКИ СПРАВА И МАТОВОСТЬ
    ========================= */
 
 .header-controls {
@@ -63,7 +63,7 @@ body {
     gap: 8px;
 }
 
-/* Кнопка переключения матовости (вместо выбора цвета) */
+/* Кнопка переключения режимов стекла */
 .matte-toggle-btn {
     background: rgba(255, 45, 85, 0.15);
     border: 0.5px solid rgba(255, 45, 85, 0.4);
@@ -151,7 +151,7 @@ body {
 }
 
 /* =========================
-   СООБЩЕНИЯ
+   ОБОЛОЧКИ СООБЩЕНИЙ
    ========================= */
 
 .message {
@@ -210,8 +210,7 @@ body {
     height: 75px;
     padding: 10px 12px 25px;
     z-index: 100;
-    
-    /* Жидкое стекло */
+
     background: rgba(20, 20, 25, 0.45);
     backdrop-filter: blur(25px) saturate(180%);
     -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -229,7 +228,7 @@ body.input-off #chat-window {
     scroll-padding-bottom: 16px;
 }
 
-/* Поле */
+/* Поле ввода */
 .input-container {
     display: flex;
     align-items: center;
@@ -276,7 +275,6 @@ body.input-off #chat-window {
     transform: scale(0.9);
 }
 
-
 /* =========================================
    РЕЖИМ МАТОВОСТИ (ПЕРЕКЛЮЧАТЕЛЬ СТИЛЯ)
    ========================================= */
@@ -301,4 +299,3 @@ body.matte-mode .matte-toggle-btn {
     border-color: #3a3a3c;
     color: #fff;
 }
-
