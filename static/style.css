@@ -1,0 +1,301 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #050507;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =========================
+   ШАПКА (ЖИДКОЕ СТЕКЛО)
+   ========================= */
+
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+
+    /* Эффект жидкого стекла */
+    background: rgba(20, 20, 25, 0.45);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.header-info h1 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.3px;
+}
+
+.header-info .status {
+    font-size: 11px;
+    margin-top: 1px;
+    color: rgba(235, 235, 245, 0.6);
+}
+
+/* =========================
+   КНОПКИ СПРАВА И МАТОВОСТЬ
+   ========================= */
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Кнопка переключения режимов стекла */
+.matte-toggle-btn {
+    background: rgba(255, 45, 85, 0.15);
+    border: 0.5px solid rgba(255, 45, 85, 0.4);
+    color: #ff2d55;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.matte-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+/* =========================
+   ПЕРЕКЛЮЧАТЕЛЬ
+   ========================= */
+
+.input-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.input-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    transition: 0.2s;
+    backdrop-filter: blur(5px);
+}
+
+.switch-slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 2px;
+    top: 2px;
+    background: #fff;
+    border-radius: 50%;
+    transition: 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.input-switch input:checked + .switch-slider {
+    background: #ff2d55;
+}
+
+.input-switch input:checked + .switch-slider::before {
+    transform: translateX(16px);
+}
+
+/* =========================
+   ЧАТ
+   ========================= */
+
+#chat-window {
+    flex: 1;
+    margin-top: 60px;
+    padding: 16px 16px 110px 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-bottom: 110px;
+    position: relative;
+    z-index: 1;
+    background: radial-gradient(circle at top, #16121a 0%, #050507 100%);
+}
+
+/* =========================
+   ОБОЛОЧКИ СООБЩЕНИЙ
+   ========================= */
+
+.message {
+    padding: 11px 16px;
+    border-radius: 20px;
+    max-width: 78%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 15px;
+    line-height: 1.4;
+    display: block;
+    position: relative;
+}
+
+/* Пользователь */
+.message.user {
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+    background: rgba(44, 44, 46, 0.8);
+    backdrop-filter: blur(10px);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+/* Верити цундере (Розовый жидкий градиент) */
+.message.bot {
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    background: linear-gradient(135deg, #ff2d55 0%, #ff5e7e 100%);
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(255, 45, 85, 0.3);
+}
+
+/* =========================
+   СТАТУС "ПЕЧАТАЕТ"
+   ========================= */
+
+.system-status {
+    background: transparent !important;
+    color: rgba(235, 235, 245, 0.5) !important;
+    font-size: 13px;
+    align-self: center !important;
+    text-align: center;
+    width: 100%;
+}
+
+/* =========================
+   ПАНЕЛЬ ВВОДА
+   ========================= */
+
+#input-panel {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 75px;
+    padding: 10px 12px 25px;
+    z-index: 100;
+
+    background: rgba(20, 20, 25, 0.45);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-top: 0.5px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+#input-panel.input-hidden {
+    display: none !important;
+}
+
+body.input-off #chat-window {
+    padding-bottom: 16px;
+    scroll-padding-bottom: 16px;
+}
+
+/* Поле ввода */
+.input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 38px;
+    padding: 4px 4px 4px 16px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+}
+
+#user-input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    outline: none;
+    font-size: 16px;
+}
+
+#user-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Кнопка отправки */
+#send-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ff2d55;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 45, 85, 0.4);
+    transition: transform 0.2s;
+}
+
+#send-btn:active {
+    transform: scale(0.9);
+}
+
+/* =========================================
+   РЕЖИМ МАТОВОСТИ (ПЕРЕКЛЮЧАТЕЛЬ СТИЛЯ)
+   ========================================= */
+
+body.matte-mode .main-header,
+body.matte-mode #input-panel {
+    background: #121215 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+}
+
+body.matte-mode .input-container {
+    background: #1c1c1e !important;
+    backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.matte-mode .matte-toggle-btn {
+    background: #2c2c2e;
+    border-color: #3a3a3c;
+    color: #fff;
+}
