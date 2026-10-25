@@ -10,6 +10,7 @@
     margin: 0;
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -127,6 +128,7 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding-bottom: 90px;
 }
 
 /* Сообщения (жидкое стекло) */
@@ -165,9 +167,67 @@ body::after {
     color: #aaa;
 }
 
-/* Панель ввода внизу */
+/* =========================================
+   ПАНЕЛЬ ВВОДА И СТЕКЛО (ДОПИСАННЫЙ БЛОК)
+   ========================================= */
+
 #input-panel {
-    padding: 12px 15px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px 15px 20px 15px;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -8px 32px 0 rgba(0, 0, 0, 0.37);
+    z-index: 10;
+}
+
+#input-panel.input-hidden {
+    display: none !important;
+}
+
+/* Капсула инпута */
+.input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    padding: 6px 6px 6px 16px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+/* Само текстовое поле */
+#user-input {
+    flex: 1;
+    background: transparent !important;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 15px;
+}
+
+#user-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Кнопка отправки */
+#send-btn {
+    background: var(--neon-pink);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 45, 85, 0.5);
+    transition: transform 0.2s;
+}
