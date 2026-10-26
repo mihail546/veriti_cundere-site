@@ -9,6 +9,77 @@
     <link rel="stylesheet" href="/static/style.css">
 
     <style>
+        /* Переключатель матового режима */
+        body.matte-mode {
+            --bg-color: #121216;
+        }
+
+        body.matte-mode::before, 
+        body.matte-mode::after {
+            display: none;
+        }
+
+        body.matte-mode .main-header,
+        body.matte-mode #input-panel,
+        body.matte-mode .input-container,
+        body.matte-mode .message,
+        body.matte-mode .thinking-box,
+        body.matte-mode .thinking-toggle {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: #1e1e24 !important;
+        }
+
+        /* Адаптация под Safe Area устройств */
+        #input-panel {
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+        }
+
+        /* Стиль для свитча скрыть/показать инпут */
+        .input-switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 22px;
+        }
+
+        .input-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: .3s ease;
+            border-radius: 20px;
+            border: 0.5px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 2px;
+            background-color: #fff;
+            transition: .3s ease;
+            border-radius: 50%;
+        }
+
+        input:checked + .switch-slider {
+            background-color: var(--neon-pink);
+        }
+
+        input:checked + .switch-slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Блок мыслей и ответа */
         .thinking-toggle {
             display: block;
             margin-top: 7px;
@@ -20,24 +91,23 @@
             font-size: 12px;
             cursor: pointer;
             backdrop-filter: blur(10px);
-        }
-
-        .thinking-toggle:active {
-            opacity: 0.7;
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
         }
 
         .thinking-box {
             display: none;
             margin-top: 7px;
-            padding: 10px;
+            padding: 10px 14px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border: 0.5px solid rgba(255, 255, 255, 0.1);
-            color: #ddd;
+            color: #bbb;
             font-size: 13px;
             line-height: 1.4;
             white-space: pre-wrap;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .thinking-box.open {
@@ -45,8 +115,10 @@
         }
 
         .bot-response {
-            max-width: 78%;
+            max-width: 80%;
             align-self: flex-start;
+            display: flex;
+            flex-direction: column;
         }
 
         .bot-response .message {
@@ -63,7 +135,6 @@
     </div>
 
     <div class="header-controls">
-        <!-- Кнопка переключения матовости стекла -->
         <button id="matte-toggle-btn" class="matte-toggle-btn" type="button">Матово</button>
 
         <label class="input-switch" title="Показывать поле ввода">
@@ -117,5 +188,82 @@
         }, 50);
     }
 
+    // Добавление стандартного сообщения (пользователь / системное)
     function appendMessage(text, sender, isSystem = false) {
-        const message = document.createElement('
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', sender);
+        if (isSystem) msgDiv.classList.add('system-status');
+        msgDiv.textContent = text;
+        chatWindow.appendChild(msgDiv);
+        scrollToBottom();
+        return msgDiv;
+    }
+
+    // Добавление ответа бота с опциональным блоком мыслей
+    function appendBotResponse(text, thinkingText = null) {
+        const container = document.createElement('div');
+        container.classList.add('bot-response');
+
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', 'bot');
+        msgDiv.textContent = text;
+        container.appendChild(msgDiv);
+
+        if (thinkingText) {
+            const toggleBtn = document.createElement('button');
+            toggleBtn.classList.add('thinking-toggle');
+            toggleBtn.textContent = '💭 Мысли Верити';
+
+            const thinkingBox = document.createElement('div');
+            thinkingBox.classList.add('thinking-box');
+            thinkingBox.textContent = thinkingText;
+
+            toggleBtn.addEventListener('click', () => {
+                thinkingBox.classList.toggle('open');
+                scrollToBottom();
+            });
+
+            container.appendChild(toggleBtn);
+            container.appendChild(thinkingBox);
+        }
+
+        chatWindow.appendChild(container);
+        scrollToBottom();
+    }
+
+    // Логика отправки сообщения
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        appendMessage(text, 'user');
+        userInput.value = '';
+
+        // Запрос к бекенду (Flask)
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+
+            const data = await response.json();
+            
+            if (data.reply) {
+                appendBotResponse(data.reply, data.thinking || null);
+            } else if (data.error) {
+                appendMessage('Ошибка: ' + data.error, 'bot', true);
+            }
+        } catch (err) {
+            appendMessage('Ошибка соединения с сервером.', 'bot', true);
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+
+</body>
+</html>
